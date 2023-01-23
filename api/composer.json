@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.17",
+        "razorpay/razorpay": "2.*"
+    }
+}

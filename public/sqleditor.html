@@ -1,0 +1,601 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+        const student = [{
+                id: 1,
+                name: "charles",
+                fname: "raman",
+                mname: "sitara",
+                class: "9"
+
+            },
+            {
+                id: 2,
+                name: "johnson",
+                fname: "john",
+                mname: "dane",
+                class: "8"
+            },
+            {
+                id: 3,
+                name: "paul",
+                fname: "pheonix",
+                mname: "rekon",
+                class: "7"
+            },
+            {
+                id: 4,
+                name: "reyna",
+                fname: "skye",
+                mname: "yori",
+                class: "6"
+            },
+            {
+                id: 5,
+                name: "jett",
+                fname: "sova",
+                mname: "sayer",
+                class: "5"
+            }
+
+        ];
+        const marks = [{
+                id: 1,
+                english: 80,
+                maths: 70,
+                science: 100,
+                s_id: 5,
+                class: "5"
+            },
+            {
+                id: 2,
+                english: 84,
+                maths: 80,
+                science: 60,
+                s_id: 4,
+                class: "6"
+            },
+            {
+                id: 3,
+                english: 40,
+                maths: 20,
+                science: 50,
+                s_id: 3,
+                class: "7"
+            },
+            {
+                id: 4,
+                english: 100,
+                maths: 50,
+                science: 30,
+                s_id: 2,
+                class: "8"
+            },
+            {
+                id: 5,
+                english: 100,
+                maths: 100,
+                science: 100,
+                s_id: 1,
+                class: "9"
+            }
+
+        ];
+
+
+
+    //     var editor = CodeMirror.fromTextArea(document.getElementById("sqlquery"), {
+    //     lineNumbers: true,
+    //     mode: "text/x-sql",
+    //     theme: "monokai",
+    //     lineWrapping: true,
+    //     matchBrackets: true,
+    //     extraKeys: { "Shift-Tab": autoFormatSelection },
+    //   });
+
+
+
+
+
+
+
+
+
+
+
+
+        function restoredatabase() {
+
+            db.transaction(function (tx) {
+                tx.executeSql('DROP TABLE student');
+            });
+
+            db.transaction(function (tx) {
+                tx.executeSql('DROP TABLE marks');
+            });
+
+
+            db.transaction(t => {
+                t.executeSql("CREATE TABLE student (id INTEGER,name TEXT, fname TEXT ,mname TEXT,class TEXT)");
+                t.executeSql(
+                    "CREATE TABLE marks (english INTEGER,maths INTEGER,science INTEGER,s_id INTEGER,class TEXT)"
+                );
+                for (let s of student) {
+                    t.executeSql("INSERT INTO student (id, name, fname ,mname,class) VALUES (?, ? ,? ,?,?)",
+                        [s.id, s.name, s.fname, s.mname, s.class]);
+                }
+                for (let m of marks) {
+                    t.executeSql("INSERT INTO marks (english,maths,science,s_id,class) VALUES (? , ?, ?, ?,?)",
+                        [m.english, m.maths, m.science, m.s_id, m.class]);
+                }
+                location.reload();
+            }, e => console.error(e));
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        const db = window.openDatabase('studentdata', '1.0', 'studentdata', 5 * 1024 * 1024);
+        db.transaction(t => {
+            t.executeSql("CREATE TABLE student (id INTEGER,name TEXT, fname TEXT ,mname TEXT,class TEXT)");
+            t.executeSql(
+                "CREATE TABLE marks (english INTEGER,maths INTEGER,science INTEGER,s_id INTEGER,class TEXT)"
+            );
+            for (let s of student) {
+                t.executeSql("INSERT INTO student (id, name, fname ,mname,class) VALUES (?, ? ,? ,?,?)",
+                    [s.id, s.name, s.fname, s.mname, s.class]);
+            }
+            for (let m of marks) {
+                t.executeSql("INSERT INTO marks (english,maths,science,s_id,class) VALUES (? , ?, ?, ?,?)",
+                    [m.english, m.maths, m.science, m.s_id, m.class]);
+            }
+        }, e => console.error(e));
+        db.transaction(t => t.executeSql(
+            "SELECT * from student", [],
+            (t, result) => {
+
+                var array1 = Object.values(result.rows);
+                console.log(array1);
+                // EXTRACT VALUE FOR HTML HEADER. 
+                // ('Book ID', 'Book Name', 'Category' and 'Price')
+                var col = [];
+                for (var i = 0; i < array1.length; i++) {
+                    for (var key in array1[i]) {
+                        if (col.indexOf(key) === -1) {
+                            col.push(key);
+                        }
+                    }
+                }
+                // CREATE DYNAMIC TABLE.
+                var table = document.createElement("table");
+                table.setAttribute('class',
+                    'border-collapse border min-w-full text-sm align-middle whitespace-nowrap');
+                var tr = table.insertRow(-1); // TABLE ROW.
+                tr.setAttribute('class', 'border-b border-gray-200 bg-gray-100');
+                for (var i = 0; i < col.length; i++) {
+                    var th = document.createElement("th"); // TABLE HEADER.
+                    th.innerHTML = col[i];
+                    th.setAttribute('class',
+                        'p-3 text-gray-700 bg-gray-100 font-bold text-sm tracking-wider text-left');
+                    tr.appendChild(th);
+                }
+                // ADD JSON DATA TO THE TABLE AS ROWS.
+                for (var i = 0; i < array1.length; i++) {
+                    tr = table.insertRow(-1);
+                    tr.setAttribute('class', 'm-2 border-b border-gray-200');
+                    for (var j = 0; j < col.length; j++) {
+                        var tabCell = tr.insertCell(-1);
+                        tabCell.innerHTML = array1[i][col[j]];
+                        tabCell.setAttribute('class', 'p-3 ');
+                    }
+                }
+                var divContainer = document.getElementById("studentdata");
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+            }
+        ));
+
+        db.transaction(t => t.executeSql(
+            "SELECT * from marks", [],
+            (t, result) => {
+                var array1 = Object.values(result.rows);
+                console.log(array1);
+                // EXTRACT VALUE FOR HTML HEADER. 
+                // ('Book ID', 'Book Name', 'Category' and 'Price')
+                var col = [];
+                for (var i = 0; i < array1.length; i++) {
+                    for (var key in array1[i]) {
+                        if (col.indexOf(key) === -1) {
+                            col.push(key);
+                        }
+                    }
+                }
+                // CREATE DYNAMIC TABLE.
+                var table = document.createElement("table");
+                table.setAttribute('class',
+                    'border-collapse border min-w-full text-sm align-middle whitespace-nowrap');
+                var tr = table.insertRow(-1); // TABLE ROW.
+                tr.setAttribute('class', 'border-b border-gray-200 bg-gray-100');
+                for (var i = 0; i < col.length; i++) {
+                    var th = document.createElement("th"); // TABLE HEADER.
+                    th.innerHTML = col[i];
+                    th.setAttribute('class',
+                        'p-3 text-gray-700 bg-gray-100 font-bold text-sm tracking-wider text-left');
+                    tr.appendChild(th);
+                }
+                // ADD JSON DATA TO THE TABLE AS ROWS.
+                for (var i = 0; i < array1.length; i++) {
+
+                    tr = table.insertRow(-1);
+                    tr.setAttribute('class', 'm-2 border-b border-gray-200');
+                    for (var j = 0; j < col.length; j++) {
+                        var tabCell = tr.insertCell(-1);
+                        tabCell.innerHTML = array1[i][col[j]];
+                        tabCell.setAttribute('class', 'p-3 ');
+                    }
+                }
+                var divContainer = document.getElementById("marksdata");
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+            }
+        ));
+
+        function updatevalue() {
+            location.reload();
+        }
+
+
+      
+
+
+
+
+
+
+        function executesql() {
+
+            var sqlstatement = document.getElementById("sqlquery").value;
+
+            console.log(sqlstatement);
+            // alert("hai");
+
+            db.transaction(t => t.executeSql(
+                sqlstatement, [],
+                (t, result) => {
+                    var array1 = Object.values(result.rows);
+                    console.log(array1);
+                    // EXTRACT VALUE FOR HTML HEADER. 
+                    // ('Book ID', 'Book Name', 'Category' and 'Price')
+                    var col = [];
+                    for (var i = 0; i < array1.length; i++) {
+                        for (var key in array1[i]) {
+                            if (col.indexOf(key) === -1) {
+                                col.push(key);
+                            }
+                        }
+                    }
+
+                    // CREATE DYNAMIC TABLE.
+                    var out = document.createElement("p");
+
+                    var table = document.createElement("table");
+                    table.setAttribute('class',
+                        'border-collapse border min-w-full text-sm align-middle whitespace-nowrap');
+                    var tr = table.insertRow(-1); // TABLE ROW.
+                    tr.setAttribute('class', 'border-b border-gray-200 bg-gray-100');
+
+                    for (var i = 0; i < col.length; i++) {
+                        var th = document.createElement("th"); // TABLE HEADER.
+                        th.setAttribute('class',
+                            'p-3 text-gray-700 bg-gray-100 font-bold text-sm tracking-wider text-left');
+                        th.innerHTML = col[i];
+                        tr.appendChild(th);
+                    }
+
+                    // ADD JSON DATA TO THE TABLE AS ROWS.
+                    for (var i = 0; i < array1.length; i++) {
+
+                        tr = table.insertRow(-1);
+                        tr.setAttribute('class', 'border-b border-gray-200 bg-white');
+
+                        for (var j = 0; j < col.length; j++) {
+                            var tabCell = tr.insertCell(-1);
+                            tabCell.setAttribute('class', 'p-3')
+                            tabCell.innerHTML = array1[i][col[j]];
+                        }
+                    }
+
+                    var outCont = document.getElementById("out");
+                    outCont.innerHTML = "";
+                    outCont.appendChild(out);
+                    var divContainer = document.getElementById("showData");
+                    divContainer.innerHTML = "";
+                    divContainer.appendChild(table);
+                }
+            ));
+
+
+
+if (sqlstatement.startsWith("update") || sqlstatement.startsWith("UPDATE") || sqlstatement.startsWith("delete") || sqlstatement.startsWith("DELETE")){
+
+    location.reload();
+
+}
+
+
+
+
+
+
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+
+        }
+
+        h1 {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 2.5rem;
+        }
+
+        .accordion {
+            width: 90%;
+            max-width: 1000px;
+            margin: 2rem auto;
+        }
+
+        .accordion-item {
+            background-color: #fff;
+            color: #111;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
+        }
+
+        .accordion-item-header {
+            padding: 0.5rem 3rem 0.5rem 1rem;
+            min-height: 3.5rem;
+            line-height: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .accordion-item-header::after {
+            content: "\002B";
+            font-size: 2rem;
+            position: absolute;
+            right: 1rem;
+        }
+
+        .accordion-item-header.active::after {
+            content: "\2212";
+        }
+
+        .accordion-item-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+
+        .accordion-item-body-content {
+            padding: 1rem;
+            line-height: 1.5rem;
+            border-top: 1px solid;
+            border-image: linear-gradient(to right, transparent, #34495e, transparent) 1;
+        }
+
+        @media(max-width:767px) {
+            html {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="bg-gray-100 h-auto w-full">
+<div class="flex items-center justify-between px-10">
+    <div>
+
+
+        
+            <a href="/">
+              <img className="block lg:hidden h-6 w-auto" src="/logo.png" alt="Workflow" class="h-10 w-auto" />
+             
+            </a>
+
+
+    </div>
+    <div>
+
+
+        <a href="/" class="bg-gray-200 mr-4 hover:bg-gray-300 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="ml-1 bi bi-play h-6 w-6" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
+            </svg>
+            <span>Back to Home</span>
+          </a>
+
+
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-2 grid-cols-1 rounded p-2 h-full">
+        <div class="bg-gray-50 p-3 border-t-2">
+            <div class="flex justify-start">
+                <p class="text-2xl font-bold md:px-10 px-0 text-gray-600 pt-4">Database</p>
+            </div>
+          
+
+
+
+
+
+
+
+
+
+           
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-item-header">
+                        student
+                    </div>
+                    <div class="accordion-item-body">
+                        <div class="accordion-item-body-content">
+                            <div>
+                                <!-- <div class="flex justify-center rounded p-2 text-white">
+                                    <p class="rounded-full px-4 py-1 bg-black">student</p>
+                                </div> -->
+                                <!-- Responsive Table Container -->
+                                <div class="border border-gray-200 rounded overflow-x-auto w-full bg-white"
+                                    id="studentdata"></div>
+                                <!-- END Responsive Table Container -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-item-header">
+                        marks
+                    </div>
+                    <div class="accordion-item-body">
+                        <div class="accordion-item-body-content">
+                            <div>
+                                <!-- <div class="flex justify-center rounded p-2 text-white">
+                                    <p class="rounded-full px-4 py-1 bg-black">marks</p>
+                                </div> -->
+                                <!-- Responsive Table Container -->
+                                <div class="border border-gray-200 rounded overflow-x-auto w-full bg-white"
+                                    id="marksdata"></div>
+                                <!-- END Responsive Table Container -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+        <div class="bg-gray-50 p-3 h-auto border-t-2">
+            <div class="flex justify-start mb-2">
+                <p class="text-2xl font-bold md:px-3 px-0 text-gray-600 pt-4">Enter your SQL query :</p>
+            </div>
+            <div>
+                <div class="space-y-1 p-3 pt-5">
+                    <!-- <label class="font-bold text-gray-600" for="tk-form-elements-name">Enter your SQL query :</label> -->
+                    <textarea
+                        class="w-full h-60 block border border-gray-200 rounded px-3 py-2 focus:border-slate-900 focus:ring focus:ring-slate-900 focus:ring-opacity-50"
+                        id="sqlquery" name="sqlquery" rows="4" placeholder="Enter your SQL query here :"></textarea>
+                </div>
+                <button onclick=executesql() type="button"
+                    class="inline-flex justify-center items-center space-x-2 rounded-full border border-black hover:bg-black hover:text-white font-semibold px-2 py-1 ml-3 leading-5 text-sm ">
+                    Run SQL Query
+                </button>
+                <!-- <button onclick=updatevalue() type="button"
+                    class="inline-flex justify-center items-center space-x-2 rounded-full border border-black hover:bg-black hover:text-white font-semibold px-2 py-1 ml-3 leading-5 text-sm">
+                    Refresh page
+                </button> -->
+                <button onclick=restoredatabase() type="button"
+                    class="inline-flex justify-center items-center space-x-2 rounded-full border border-black hover:bg-black hover:text-white font-semibold px-2 py-1 ml-3 leading-5 text-sm">
+                    Restore Database
+                </button>
+            </div>
+            <div class="pt-4">
+                <div id="out" class="flex justify-center rounded p-2 text-white"></div>
+                <div id="showData" class="md:px-3 px-0">Your result will be shown here :</div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        const accordionItemHeaders = document.querySelectorAll(".accordion-item-header");
+
+        accordionItemHeaders.forEach(accordionItemHeader => {
+            accordionItemHeader.addEventListener("click", event => {
+
+                // Uncomment in case you only want to allow for the display of only one collapsed item at a time!
+
+                const currentlyActiveAccordionItemHeader = document.querySelector(
+                    ".accordion-item-header.active");
+                if (currentlyActiveAccordionItemHeader && currentlyActiveAccordionItemHeader !==
+                    accordionItemHeader) {
+                    currentlyActiveAccordionItemHeader.classList.toggle("active");
+                    currentlyActiveAccordionItemHeader.nextElementSibling.style.maxHeight = 0;
+                }
+
+                accordionItemHeader.classList.toggle("active");
+                const accordionItemBody = accordionItemHeader.nextElementSibling;
+                if (accordionItemHeader.classList.contains("active")) {
+                    accordionItemBody.style.maxHeight = accordionItemBody.scrollHeight + "px";
+                } else {
+                    accordionItemBody.style.maxHeight = 0;
+                }
+
+            });
+        });
+    </script>
+
+
+
+
+
+
+</body>
+
+</html>

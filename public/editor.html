@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Try it yourself editor</title>
+    <style type="text/css">
+      #targetCode {
+        border-left: 1px solid #ddd;
+        height: 90vh;
+        width: 50%;
+      }
+      #sourceCode {
+        width: 50%;
+        height: 90vh;
+      }
+      .CodeMirror {
+        /* font-family: Arial, monospace; */
+        font-size: 23px;
+      }
+    </style>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://codemirror.net/2/lib/codemirror.css" />
+    <script type="text/javascript" src="https://codemirror.net/2/lib/codemirror.js"></script>
+    <script type="text/javascript" src="https://codemirror.net/2/lib/util/formatting.js"></script>
+    <script type="text/javascript" src="https://codemirror.net/2/mode/css/css.js"></script>
+    <script type="text/javascript" src="https://codemirror.net/2/mode/xml/xml.js"></script>
+    <script type="text/javascript" src="https://codemirror.net/2/mode/htmlmixed/htmlmixed.js"></script>
+    <script type="text/javascript" src="https://codemirror.net/2/mode/javascript/javascript.js"></script>
+    <link rel="stylesheet" href="https://codemirror.net/2/theme/monokai.css" />
+    <!-- <link rel="stylesheet" href="https://codemirror.net/2/theme/lesser-dark.css" /> -->
+  </head>
+  <body>
+    <div class="border bg-gray-200 p-2 flex justify-between">
+      <div class="flex">
+        <!-- <span class="p-4">HTML Table</span> -->
+        <button style="background: #0cc7db" onclick="runCode();" class="bg-nirmaan-light hover:bg-green-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+          <span>RUN</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="ml-1 bi bi-play h-6 w-6" viewBox="0 0 16 16">
+            <path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" />
+          </svg>
+        </button>
+        <!-- <button onclick="runCode();" class="ml-2 bg-green-300 hover:bg-green-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+          <span>SAVE</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="ml-2 bi bi-save h-4 w-4" viewBox="0 0 16 16">
+            <path
+              d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"
+            />
+          </svg>
+        </button> -->
+        <button onclick="autoFormat();" class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+          <span>FORMAT</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="ml-2 bi bi-play h-5 w-5" viewBox="0 0 16 16">
+            <path
+              d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"
+            />
+          </svg>
+        </button>
+
+        
+      </div>
+      <!-- <button onclick="autoFormat();" class="mr-4 hover:bg-gray-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="ml-1 bi bi-play h-6 w-6" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
+        </svg>
+        <span>Back</span>
+      </button> -->
+    </div>
+    <div class="flex">
+      <textarea name="sourceCode" id="sourceCode"> </textarea>
+      <iframe name="targetCode" id="targetCode"></iframe>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript">
+      var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+          sURLVariables = sPageURL.split("&"),
+          sParameterName,
+          i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+          sParameterName = sURLVariables[i].split("=");
+
+          if (sParameterName[0] === sParam) {
+            return typeof sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+          }
+        }
+        return false;
+      };
+
+      var topic = getUrlParameter("topic");
+      var id = getUrlParameter("id");
+      console.log(topic);
+      console.log(id);
+
+      var editor = CodeMirror.fromTextArea(document.getElementById("sourceCode"), {
+        lineNumbers: true,
+        mode: "htmlmixed",
+        theme: "monokai",
+        lineWrapping: true,
+        matchBrackets: true,
+        extraKeys: { "Shift-Tab": autoFormatSelection },
+      });
+      editor.setSize("50%", "90vh");
+
+      function getSelectedRange() {
+        return { from: editor.getCursor(true), to: editor.getCursor(false) };
+      }
+      function autoFormatSelection() {
+        var range = getSelectedRange();
+        editor.autoFormatRange(range.from, range.to);
+      }
+      function commentSelection(isComment) {
+        var range = getSelectedRange();
+        editor.commentRange(isComment, range.from, range.to);
+      }
+      function runCode() {
+        // var content = document.getElementById("sourceCode").value;
+        var content = editor.getValue();
+        // document.getElementById('targetCode').src = "data:text/html;charset=utf-8," + escape(content);
+        // alert(content)
+        var iframe = document.getElementById("targetCode");
+        iframe = iframe.contentWindow ? iframe.contentWindow : iframe.contentDocument.document ? iframe.contentDocument.document : iframe.contentDocument;
+        // iframe = iframe.contentDocument || iframe.contentWindow.document;
+        iframe.document.open();
+        iframe.document.write(content);
+        iframe.document.close();
+        // iframe.body.innerHTML = "";
+        // iframe.body.innerHTML = content;
+        return false;
+      }
+      runCode();
+      function autoFormat() {
+        CodeMirror.commands["selectAll"](editor);
+        autoFormatSelection();
+        CodeMirror.commands["goPageUp"](editor);
+      }
+      $.post(
+          "https://learn-api.nirmaan.org/courses/get_code.php",
+        {
+          topic: topic,
+          id: id,
+        },
+        function (data, status) {
+          editor.setValue(data.data);
+          runCode();
+          autoFormat();
+        }
+      );
+    </script>
+  </body>
+</html>

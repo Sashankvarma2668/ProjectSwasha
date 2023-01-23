@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Try it yourself editor</title>
+  <link rel="icon" href="/favicon.png" />
+  <style type="text/css">
+    #targetCode {
+      border-left: 1px solid #ddd;
+      height: 90vh;
+      width: 50%;
+    }
+
+    #sourceCode {
+      width: 50%;
+      height: 90vh;
+    }
+
+    .CodeMirror {
+      /* font-family: Arial, monospace; */
+      font-size: 23px;
+    }
+  </style>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="https://codemirror.net/2/lib/codemirror.css" />
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/javascript" src="https://codemirror.net/2/lib/codemirror.js"></script>
+  <script type="text/javascript" src="https://codemirror.net/2/lib/util/formatting.js"></script>
+  <script type="text/javascript" src="https://codemirror.net/2/mode/css/css.js"></script>
+  <script type="text/javascript" src="https://codemirror.net/2/mode/xml/xml.js"></script>
+  <script type="text/javascript" src="https://codemirror.net/2/mode/htmlmixed/htmlmixed.js"></script>
+  <script type="text/javascript" src="https://codemirror.net/2/mode/javascript/javascript.js"></script>
+  <link rel="stylesheet" href="https://codemirror.net/2/theme/monokai.css" />
+  <link rel="stylesheet" href="https://codemirror.net/2/theme/lesser-dark.css" />
+</head>
+
+<body onload="myFunction()">
+  <div class="border bg-gray-200 p-2 flex justify-between">
+    <div class="flex">
+      <div class="xl:w-96 flex align-middle items-center">
+        <input id="filename" type="text"
+          class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+          id="exampleFormControlInput1" placeholder="Enter file name" value="NewFile" />
+        <div class="space-y-1 ml-1">
+
+          <select id="codetype"
+            class="w-36 block border border-gray-200 rounded px-1 py-1.5 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+           >
+            <option value="HTML">HTML</option>
+            <option value="CSS">CSS</option>
+            <option value="Javascript">Javascript</option>
+            <!-- <option>Svelte</option>
+              <option>Ember.js</option>
+              <option>Meteor</option> -->
+          </select>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+      <button onclick="submitrequest()"
+        class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+        <span>UPDATE</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          class="ml-2 bi bi-cloud-arrow-up h-5 w-5" viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z" />
+          <path
+            d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
+        </svg>
+      </button>
+
+      <!-- <span class="p-4">HTML, CSS, Javascript Compiler</span> -->
+      <button onclick="runCode();"
+        class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+        <span>RUN</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          class="ml-1 bi bi-play h-6 w-6" viewBox="0 0 16 16">
+          <path
+            d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" />
+        </svg>
+      </button>
+
+      <button onclick="autoFormat();"
+        class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+        <span>FORMAT</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          class="ml-2 bi bi-play h-5 w-5" viewBox="0 0 16 16">
+          <path
+            d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z" />
+        </svg>
+      </button>
+    </div>
+    
+    <a href="/savedcode"
+      class="mr-4 hover:bg-gray-400 text-gray-800 font-bold my-2 py-2 px-4 rounded flex items-center align-middle">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="ml-1 bi bi-play h-6 w-6"
+        viewBox="0 0 16 16">
+        <path fill-rule="evenodd"
+          d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
+      </svg>
+      <span>Back</span>
+    </a>
+
+
+
+
+
+
+
+  </div>
+  <div class="flex">
+    <textarea name="sourceCode" id="sourceCode"> </textarea>
+    <iframe name="targetCode" id="targetCode"></iframe>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript">
+
+
+
+
+
+var id=window.location.search;
+var pro_id=id.replace("?", "")
+
+
+
+
+    var editor = CodeMirror.fromTextArea(document.getElementById("sourceCode"), {
+      lineNumbers: true,
+      mode: "htmlmixed",
+      theme: "monokai",
+      lineWrapping: true,
+      matchBrackets: true,
+      extraKeys: {
+        "Shift-Tab": autoFormatSelection
+      },
+    });
+    editor.setSize("50%", "90vh");
+
+    function getSelectedRange() {
+      return {
+        from: editor.getCursor(true),
+        to: editor.getCursor(false)
+      };
+    }
+
+    function autoFormatSelection() {
+      var range = getSelectedRange();
+      editor.autoFormatRange(range.from, range.to);
+    }
+
+    function commentSelection(isComment) {
+      var range = getSelectedRange();
+      editor.commentRange(isComment, range.from, range.to);
+    }
+
+    function runCode() {
+      autoFormat();
+      // var content = document.getElementById("sourceCode").value;
+      var content = editor.getValue();
+      // document.getElementById('targetCode').src = "data:text/html;charset=utf-8," + escape(content);
+      // alert(content)
+      var iframe = document.getElementById("targetCode");
+      iframe = iframe.contentWindow ? iframe.contentWindow : iframe.contentDocument.document ? iframe.contentDocument
+        .document : iframe.contentDocument;
+      // iframe = iframe.contentDocument || iframe.contentWindow.document;
+      iframe.document.open();
+      iframe.document.write(content);
+      iframe.document.close();
+      // iframe.body.innerHTML = "";
+      // iframe.body.innerHTML = content;
+      return false;
+    }
+    runCode();
+
+    function autoFormat() {
+      CodeMirror.commands["selectAll"](editor);
+      autoFormatSelection();
+      CodeMirror.commands["goPageUp"](editor);
+    }
+
+
+
+
+    function submitrequest() {
+      autoFormat();
+
+
+
+
+
+      function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+
+
+
+
+
+
+
+
+
+      studentid = getCookie("student_login_token");
+      programid = Math.floor(100000 + Math.random() * 900000);
+      filename = document.getElementById("filename").value;
+      codetype = document.getElementById("codetype").value;
+      code = editor.getValue();
+
+      // alert(studentid+"  "+programid+"  "+filename+"  "+codetype+"  "+code);
+
+      //data to send
+      // senddata = {
+      //   s_id: studentid,
+      //   p_id: programid,
+      //   file_name: filename,
+      //   code_type: codetype,
+      //   code: code
+      // };
+      // let xhr = new XMLHttpRequest();
+      // xhr.open('POST', 'http://localhost/learning-portal/nirmaan-learning-portal/api/savecode.php');
+      // xhr.send(JSON.stringify(senddata));
+      // xhr.onload = function () {
+      //     if (xhr.status != 200) {
+      //         alert(xhr.statusText); //error
+      //     } else {
+      //         alert(xhr.responseText); //success
+      //     }
+      // };
+
+
+
+      axios
+        .post("https://learn-api.nirmaan.org/updatecode.php", {
+        s_id: studentid,
+        p_id: pro_id,
+        file_name: filename,
+        code_type: codetype,
+        code: code
+
+        })
+        .then(function (response) {
+
+          console.log(response);
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+
+
+
+        alert("Program Successfully Updated");
+
+
+
+    }
+
+
+// alert(programid);
+
+let filename,filetype,code1;
+
+function myFunction() {
+  axios
+        .post("https://learn-api.nirmaan.org/savecode_singlerecord.php", {
+          program_id:pro_id,
+        })
+        .then(function (response) {
+
+          filename=response.data?.data?.Title;
+          document.getElementById("filename").value = filename;
+          
+
+          filetype=response.data?.data?.ProgramType;
+          document.getElementById("codetype").value = filetype;
+
+          code1=response.data?.data?.Code;
+          editor.setValue(code1);
+
+
+
+        
+
+
+
+          console.log(response.data?.data);
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+}
+
+
+
+
+
+
+
+  </script>
+</body>
+
+</html>

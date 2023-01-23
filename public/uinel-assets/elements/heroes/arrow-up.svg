@@ -1,0 +1,9 @@
+<svg width="308" height="78" viewBox="0 0 308 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_377:44)">
+        <path d="M-1114 -873H806V459C806 503.183 770.183 539 726 539H-1034C-1078.18 539 -1114 503.183 -1114 459V-873Z" fill="none"/>
+            <rect x="1.5" y="-1.5" width="388" height="124" rx="6.5" transform="matrix(1 1.74846e-07 1.74846e-07 -1 -89 75)" stroke="#4586FF" stroke-width="3"/>
+            <rect width="418" height="127" transform="matrix(1 1.74846e-07 1.74846e-07 -1 -71 15)" fill="none"/>
+        <path d="M306.5 6.2L300.5 2L300.5 16" stroke="#4586FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M294.5 6L300.5 2" stroke="#4586FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+</svg>
